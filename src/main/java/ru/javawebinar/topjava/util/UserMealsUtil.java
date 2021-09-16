@@ -6,8 +6,10 @@ import ru.javawebinar.topjava.model.UserMealWithExcess;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -29,11 +31,42 @@ public class UserMealsUtil {
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // TODO return filtered list with excess. Implement by cycles
-        return null;
+
+        List<UserMealWithExcess> excesses = new ArrayList<>();
+        List<UserMeal> mealList = new ArrayList<>();
+        int calories = 0;
+        for (UserMeal meal : meals) {
+            if (meal.getDateTime().toLocalTime().isBefore(endTime)
+                    && meal.getDateTime().toLocalTime().isAfter(startTime)) {
+                mealList.add(meal);
+                calories += meal.getCalories();
+            }
+        }
+
+        for (UserMeal meal : mealList) {
+            boolean b = calories > caloriesPerDay
+                    ? excesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), true))
+                    : excesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false));
+
+        }
+        return excesses;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // TODO Implement by streams
-        return null;
+
+        List<UserMealWithExcess> excesses = new ArrayList<>();
+        List<UserMeal> userMeals = meals.stream().filter(meal ->
+                        meal.getDateTime().toLocalTime().isBefore(endTime) && meal.getDateTime().toLocalTime().isAfter(startTime))
+                .collect(Collectors.toList());
+        int sum = userMeals.stream().mapToInt(m -> m.getCalories()).sum();
+
+        for (UserMeal meal : userMeals) {
+            boolean b = sum > caloriesPerDay
+                    ? excesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), true))
+                    : excesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false));
+
+        }
+        return excesses;
     }
 }
