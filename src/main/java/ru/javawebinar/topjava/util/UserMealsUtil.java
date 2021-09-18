@@ -31,13 +31,14 @@ public class UserMealsUtil {
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // TODO return filtered list with excess. Implement by cycles
 
-        final Map<LocalDate, Integer> caloriesSumByDate = new HashMap<>();
+        Map<LocalDate, Integer> caloriesSumByDate = new HashMap<>();
         meals.forEach(meal -> caloriesSumByDate.merge(meal.getDateTime().toLocalDate(), meal.getCalories(), Integer::sum));
 
-        final List<UserMealWithExcess> mealsWithExceeded = new ArrayList<>();
+        List<UserMealWithExcess> mealsWithExceeded = new ArrayList<>();
         meals.forEach(meal -> {
             if (TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime)) {
-                mealsWithExceeded.add(createUserMealWithExcess(meal, caloriesSumByDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay));
+                mealsWithExceeded.add( new UserMealWithExcess(meal.getDateTime(),meal.getDescription(),meal.getCalories(),
+                        caloriesSumByDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay));
             }
         });
         return mealsWithExceeded;
@@ -53,11 +54,9 @@ public class UserMealsUtil {
 
         return meals.stream()
                 .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                .map(meal -> createUserMealWithExcess(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
+                .map(meal -> new UserMealWithExcess(meal.getDateTime(),meal.getDescription(),meal.getCalories(),
+                        caloriesSumByDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
 
-    public static UserMealWithExcess createUserMealWithExcess(UserMeal meals, boolean excess) {
-        return new UserMealWithExcess(meals.getDateTime(), meals.getDescription(), meals.getCalories(), excess);
-    }
 }
