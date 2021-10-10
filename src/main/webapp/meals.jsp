@@ -29,7 +29,7 @@
         <%--        <fmt:formatDate type="time" value="${meal.getTime}" pattern="dd.MM.yyyy HH:mm"/>--%>
         <c:if test="${meal.excess eq true}">
             <tr style="color: red">
-                <td>${meal.dateTime}"</td>
+                <td>${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}"</td>
 <%--                <td><fmt:formatDate value='${meal.getDateTime()}' type="both" pattern='dd.MM.yyyy'--%>
 <%--                                    var="parsedDate"/>${parsedDate}</td>--%>
                 <td>${meal.description}</td>
@@ -38,7 +38,7 @@
         </c:if>
         <c:if test="${meal.excess eq false}">
             <tr style="color: green">
-                <td>${meal.dateTime}"</td>
+                <td>${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}"</td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
             </tr>
